@@ -24,6 +24,32 @@
         if (b<0) b=0;
         else if (b>255) b=255;
         return[r,g,b];
+      },
+
+      canvas2YUV: function(canvas){
+        var ctx=canvas.getContext("2d");
+        var rgba_data = ctx.getImageData(0,0,this.width,this.height).data;
+
+        var linePos = 0;
+        var rowPos  = 0;
+
+        var yuvArray = new Array(this.height);
+        var line = new Array(this.width);
+
+        for(var i=0; i<rgba_data.length; i+=4){
+          line[linePos] = this.rgb2yuv([rgba_data[i],rgba_data[i+1],rgba_data[i+2]])          
+          linePos++
+          if(linePos==this.width){
+            yuvArray[rowPos] = line;
+            line = new Array(this.width);
+            linePos=0;
+            rowPos++
+          }
+        }
+        
+        //TO-DO: remove this line, is just for testing
+        window.yuvArray = yuvArray;
+        return yuvArray;
       }
   };
 </script>

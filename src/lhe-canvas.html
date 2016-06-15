@@ -23,9 +23,14 @@
         margin: 16px 0;
         color: #212121;
       }
+      canvas {
+        border: 1px solid black;
+      }
     </style>
     <div class="card">
-      <h1>LHE Canvas {{HELLO}}</h1>
+      <h1>LHE Canvas</h1>
+      <canvas id="imagecanvas" width="{{width}}" height="{{height}}"></canvas>
+      <p>{{image}} ({{width}}x{{height}}px)</p>
     </div>
   </template>
 
@@ -35,14 +40,40 @@
       is: 'lhe-canvas',
 
       properties: {
-        route: Object
+        route: Object,
+        image: {
+          type: String,
+          value: '../images/samples/lena.png'
+        },
+        width: {
+          type: Number
+        },
+        height: {
+          type: Number
+        },
+        yuvArray:{
+          type: Object
+        }
       },
 
       behaviors:[LHEJS.ColorUtilsBehavior],
 
       attached: function(){
-        console.log(this.rgb2yuv([155,155,112]));
-        console.log(this.yuv2rgb([150, 106, 131]));
+        this._renderImage();
+      },
+
+      _renderImage: function(){
+        var el = this;
+        var canvas = this.$.imagecanvas;
+        var ctx=canvas.getContext("2d");
+        var img=new Image();
+        img.src = this.image;
+        img.onload = function(){
+          el.width = img.width;
+          el.height = img.height;
+          ctx.drawImage(img,0,0);
+          el.yuvArray = el.canvas2YUV(el.$.imagecanvas);
+        }
       }
     });
   </script>
