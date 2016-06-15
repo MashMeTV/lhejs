@@ -17,6 +17,7 @@
         border-radius: 5px;
         background-color: #fff;
         color: #757575;
+        overflow: scroll;
       }
       h1 {
         font-size: 22px;
@@ -25,12 +26,18 @@
       }
       canvas {
         border: 1px solid black;
+        margin: auto;
+      }
+      .centered{
+        text-align: center;
       }
     </style>
     <div class="card">
-      <h1>LHE Canvas</h1>
+      <p>Loaded: {{image}} ({{width}}x{{height}}px)</p>
+    </div>
+
+    <div class="card centered">
       <canvas id="imagecanvas" width="{{width}}" height="{{height}}"></canvas>
-      <p>{{image}} ({{width}}x{{height}}px)</p>
     </div>
   </template>
 
