@@ -1,0 +1,29 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<script>
+  window.LHEJS = window.LHEJS || {};
+
+  LHEJS.ColorUtilsBehavior = {
+      rgb2yuv: function(rgb){
+        var y,u,v;
+        y = Math.floor(rgb[0] *  .299000 + rgb[1] *  .587000 + rgb[2] *  .114000);
+        u = Math.floor(rgb[0] * -.168736 + rgb[1] * -.331264 + rgb[2] *  .500000 + 128);
+        v = Math.floor(rgb[0] *  .500000 + rgb[1] * -.418688 + rgb[2] * -.081312 + 128);
+        return [y,u,v];
+      },
+
+      yuv2rgb: function(yuv){
+        var r,g,b;
+        r = Math.floor(yuv[0] + 1.4075 * (yuv[2] - 128));
+        g = Math.floor(yuv[0] - 0.3455 * (yuv[1] - 128) - (0.7169 * (yuv[2] - 128)));
+        b = Math.floor(yuv[0] + 1.7790 * (yuv[1] - 128));
+        if (r<0) r=0;
+        else if (r>255) r=255;
+        if (g<0) g=0;
+        else if (g>255) g=255;
+        if (b<0) b=0;
+        else if (b>255) b=255;
+        return[r,g,b];
+      }
+  };
+</script>
