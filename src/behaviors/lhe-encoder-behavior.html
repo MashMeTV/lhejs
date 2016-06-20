@@ -1,0 +1,153 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<script>
+  window.LHEJS = window.LHEJS || {};
+
+  LHEJS.EncoderBehavior = {
+    
+    //CONSTANTS
+    MAX_HOP_1: 10,
+    MIN_HOP_1: 4,
+    START_HOP_1: 7, // average of previous 2
+    Y_MAX_COMPONENT: 256,
+    MIN_COMPONENT_VALUE: 0,
+    MAX_COMPONENT_VALUE: 255,
+    PARAM_R: 25,
+    RATIO: 40,
+    H1_RANGE: 20,
+    NUMBER_OF_HOPS: 9,
+    R_MIN: 20,
+    R_MAX: 40,
+    HOP_NEG_4: 0,
+    HOP_NEG_3: 1,
+    HOP_NEG_2: 2,
+    HOP_NEG_1: 3,
+    HOP_0:     4,
+    HOP_POS_1: 5,
+    HOP_POS_2: 6,
+    HOP_POS_3: 7,
+    HOP_POS_4: 8,
+
+
+    //Polymer properties
+    properties:{
+      original_data:{ //wxhx3
+        type: Object
+      },
+      prediction:{ //wxhx3
+        type: Object
+      },
+      hops:{ //wxhx3
+        type: Object
+      },
+      first_color:{ // [y,u,v]
+        type: Object
+      },
+      best_hop:{
+        type: Object
+      },
+      prec_luminance:{
+        type: Object
+      }
+      //will come back in LHE advanced
+      /*,
+      first_color_block:{
+        type: Object
+      }*/
+    },
+
+    createArray: function(length) {
+        var arr = new Array(length || 0),
+            i = length;
+        if (arguments.length > 1) {
+            var args = Array.prototype.slice.call(arguments, 1);
+            while(i--) arr[length-1 - i] = this.createArray.apply(this, args);
+        }
+        return arr;
+    },
+
+    LHECreateArrays: function(){
+      this.prediction = this.createArray(this.width, this.height, 3);
+      this.hops = this.createArray(this.width, this.height, 3);
+      //this.first_color_block = this.createArray(this.width, this.height, 3);
+      this.first_color = new Array(3);
+      this.best_hop = this.createArray(this.RATIO, this.H1_RANGE, this.Y_MAX_COMPONENT, this.Y_MAX_COMPONENT);
+      this.prec_luminance = this.createArray(this.Y_MAX_COMPONENT, this.RATIO, this.H1_RANGE, this.NUMBER_OF_HOPS);
+    },
+
+
+
+    LHEBasicEncodeOneHopPerPixel: function(selectedComponent){  //component, 0=y, 1=u, 2=v 
+      console.time("LHEBasicEncodeOneHopPerPixel " + selectedComponent);    
+      //INIT VARIABLES
+      var predicted_component = 0;
+      var small_hop = false;
+      var last_small_hop=false;      // indicates if last hop is small
+      var hop_1= this.START_HOP_1;
+      var hop_number=4;              // pre-selected hop // 4 is NULL HOP
+      var rmax=this.PARAM_R;
+      var original_color = 0;
+
+      //TRAVEL ALL IMAGE PIXELS
+      for(var y=0; y<this.height; y++){
+        for(var x=0; x<this.width; x++){
+
+          original_color = this.original_data[x][y][selectedComponent];
+
+          if(x==0 && y==0){
+            predicted_component = original_color; 
+ 
+            //LHE Advanced
+            //this.first_color_block[0]=original_color;
+          } else if(y==0){
+            predicted_component = this.prediction[x-1][y][selectedComponent];
+          } else if(x==0){
+            predicted_component = this.prediction[x][y-1][selectedComponent];
+            last_small_hop=false;
+            hop_1=this.START_HOP_1;  
+          } else if (x == this.width -1){
+            predicted_component = parseInt((this.prediction[x-1][y][selectedComponent] + this.prediction[x][y-1][selectedComponent]) / 2,10);               
+          } else {
+            predicted_component = parseInt((this.prediction[x-1][y][selectedComponent]+this.prediction[x+1][y-1][selectedComponent]) / 2, 10); 
+          }
+
+          hop_number = this.best_hop[rmax][hop_1][original_color][predicted_component];
+
+          this.prediction[x][y][selectedComponent]= this.prec_luminance[predicted_component][rmax][hop_1][hop_number];  
+          this.hops[x][y][selectedComponent]= hop_number;
+          
+          //H1_ADAPTATION
+          if (hop_number<=this.HOP_POS_1 && hop_number>=this.HOP_NEG_1) 
+            small_hop=true;
+          else
+            small_hop=false;                                
+                                                       
+          if( (small_hop) && (last_small_hop))  {
+            hop_1=hop_1-1;
+
+            if (hop_1<this.MIN_HOP_1)
+              hop_1=this.MIN_HOP_1;                                          
+                                                        
+          } else                                           
+            hop_1=this.MAX_HOP_1;                                
+          
+          last_small_hop=small_hop;
+        } //end x
+
+        //component_original_data+=dif_line; 
+        window.hops = this.hops;
+      } // end y
+      console.timeEnd("LHEBasicEncodeOneHopPerPixel " + selectedComponent);
+    },
+
+    LHEBasicEncode: function(){
+      this.LHECreateArrays();
+      this.LHEInitCache();
+      this.first_color = this.original_data[0][0];
+      this.LHEBasicEncodeOneHopPerPixel(0);
+      this.LHEBasicEncodeOneHopPerPixel(1);
+      this.LHEBasicEncodeOneHopPerPixel(2);
+    }
+
+  };
+</script>

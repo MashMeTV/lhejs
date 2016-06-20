@@ -12,7 +12,7 @@
         return [y,u,v];
       },
 
-      yuv2rgb: function(yuv){
+      yuv2rgba: function(yuv){
         var r,g,b;
         r = Math.floor(yuv[0] + 1.4075 * (yuv[2] - 128));
         g = Math.floor(yuv[0] - 0.3455 * (yuv[1] - 128) - (0.7169 * (yuv[2] - 128)));
@@ -23,10 +23,12 @@
         else if (g>255) g=255;
         if (b<0) b=0;
         else if (b>255) b=255;
-        return[r,g,b];
+        return[r,g,b,255];
       },
 
       canvas2YUV: function(canvas){
+        console.time("canvas2YUV");
+
         var ctx=canvas.getContext("2d");
         var rgba_data = ctx.getImageData(0,0,this.width,this.height).data;
 
@@ -36,6 +38,7 @@
         var yuvArray = new Array(this.height);
         var line = new Array(this.width);
 
+        console.time("canvas2YUV for")
         for(var i=0; i<rgba_data.length; i+=4){
           line[linePos] = this.rgb2yuv([rgba_data[i],rgba_data[i+1],rgba_data[i+2]])          
           linePos++
@@ -46,10 +49,39 @@
             rowPos++
           }
         }
+        console.timeEnd("canvas2YUV for")
         
         //TO-DO: remove this line, is just for testing
-        window.yuvArray = yuvArray;
+        window.original_data = yuvArray;
+        console.timeEnd("canvas2YUV");
         return yuvArray;
+      },
+
+      YUV2canvas: function(yuvArray, canvas){
+        console.time("YUV2canvas")
+        var ctx=canvas.getContext("2d");
+        var imageData = ctx.getImageData(0,0,yuvArray.length,yuvArray[0].length)
+        var pix = 0;
+        var data = [];
+        for(var x=0; x<yuvArray.length; x++){
+          for(var y=0; y<yuvArray[0].length; y++){
+            var prgba = this.yuv2rgba([yuvArray[x][y][0],yuvArray[x][y][1],yuvArray[x][y][2]])
+            data.push(prgba[0]);
+            data.push(prgba[1]);
+            data.push(prgba[2]);
+            data.push(prgba[3]);
+          }
+        }
+
+        for(var i = 0; i < data.length; i+=4) {
+          imageData.data[i] = data[i]
+          imageData.data[i+1] = data[i+1];
+          imageData.data[i+2] = data[i+2];
+          imageData.data[i+3] = data[i+3];
+        }
+
+        ctx.putImageData(imageData,0,0);
+        console.timeEnd("YUV2canvas")
       }
   };
 </script>

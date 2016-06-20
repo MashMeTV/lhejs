@@ -1,0 +1,168 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<script>
+  window.LHEJS = window.LHEJS || {};
+
+  LHEJS.CachesBehavior = {
+    LHEInitCache: function(){
+      console.time("LHEInitCache");
+      var cache_ratio = [0,0]; //pow functions [+,-]
+
+      //NEGATIVE HOPS
+      var hop_neg_4 = 0;
+      var hop_neg_3 = 0;
+      var hop_neg_2 = 0;
+      
+      //POSITIVE HOPS
+      var hop_pos_2 = 0;
+      var hop_pos_3 = 0;
+      var hop_pos_4 = 0;
+
+      var percent_range=0.8; //0.8 is the  80%
+      var pow_index = 1.0/3;
+
+      //hop0_Y is hop0 component color value
+      for(var hop0_Y = 0; hop0_Y< this.Y_MAX_COMPONENT; hop0_Y++){
+        //this bucle allows computations for different values of rmax from 20 to 40. 
+        //however, finally only one value (25) is used in LHE
+        for (var rmax=this.R_MIN; rmax<this.R_MAX ; rmax++){
+          //hop1 is the distance from hop0_Y to next hop (positive or negative)
+          for (var hop1 = 1; hop1<this.H1_RANGE; hop1++) {
+
+                //variable declaration
+                var max= rmax/10.0;// control of limits if rmax is 25 then max is 2.5f;
+                              
+                // r values for possitive hops 
+                cache_ratio[0] = Math.pow(percent_range*(255-hop0_Y)/(hop1), pow_index);
+                if (cache_ratio[0]>max)
+                    cache_ratio[0]=max;
+                
+                // r' values for negative hops
+                cache_ratio[1]= Math.pow(percent_range*(hop0_Y)/(hop1), pow_index);
+                if (cache_ratio[1]>max) 
+                    cache_ratio[1]=max;
+
+                // COMPUTATION OF HOPS
+                //  Possitive hops luminance
+                hop_pos_2 = parseInt(hop1*cache_ratio[0],10);
+                hop_pos_3 = parseInt(hop_pos_2*cache_ratio[0],10);
+                hop_pos_4 = parseInt(hop_pos_3*cache_ratio[0],10);
+
+                //Negative hops luminance                        
+                hop_neg_2 = parseInt(hop1*cache_ratio[1],10);
+                hop_neg_3 = parseInt(hop_neg_2*cache_ratio[1],10);
+                hop_neg_4 = parseInt(hop_neg_3*cache_ratio[1],10);
+
+                this.LHEInitHopColorComponentValue(hop0_Y, hop1, rmax, hop_neg_4, hop_neg_3, hop_neg_2, hop_pos_2, hop_pos_3, hop_pos_4);
+                
+                this.LHEInitBestHop(hop0_Y, hop1, rmax);
+
+          } //end for hop1
+        } //end for rmax
+      } //end hop0_Y
+      
+      //TESTING ONLY, REMOVE AFTEWARDS
+      window.best_hop = this.best_hop;
+      window.prec_luminance = this.prec_luminance;
+
+      console.timeEnd("LHEInitCache");
+    },
+
+    LHEInitHopColorComponentValue: function(hop0_Y, hop1, rmax, hop_neg_4, hop_neg_3, hop_neg_2, hop_pos_2, hop_pos_3, hop_pos_4){
+
+
+      //HOP -4
+      this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_NEG_4]= hop0_Y  - hop_neg_4;       
+      if (this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_NEG_4]<=this.MIN_COMPONENT_VALUE) 
+          this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_NEG_4]=1;
+
+      //HOP-3
+      this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_NEG_3]= hop0_Y - hop_neg_3; 
+      if (this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_NEG_3] <= this.MIN_COMPONENT_VALUE) 
+          this.prec_luminance [hop0_Y][rmax][hop1][this.HOP_NEG_3]=1;
+ 
+       //HOP-2
+      this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_NEG_2]= hop0_Y - hop_neg_2; 
+      if (this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_NEG_2] <= this.MIN_COMPONENT_VALUE) 
+          this.prec_luminance [hop0_Y][rmax][hop1][this.HOP_NEG_2]=1;
+
+      //HOP-1
+      this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_NEG_1]= hop0_Y - hop1; 
+      if (this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_NEG_1] <= this.MIN_COMPONENT_VALUE) 
+          this.prec_luminance [hop0_Y][rmax][hop1][this.HOP_NEG_1]=1; 
+
+      //HOP-0
+      this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_0]= hop0_Y; 
+      if (this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_0] <= this.MIN_COMPONENT_VALUE) 
+          this.prec_luminance [hop0_Y][rmax][hop1][this.HOP_0]=1;   
+      if (this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_0]>this.MAX_COMPONENT_VALUE) 
+          this.prec_luminance[hop0_Y][hop1][rmax][this.HOP_0]=this.MAX_COMPONENT_VALUE;//null hop
+
+      //HOP1
+      this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_POS_1]= hop0_Y + hop1;
+      if (this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_POS_1]>this.MAX_COMPONENT_VALUE)
+        this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_POS_1]=this.MAX_COMPONENT_VALUE;
+
+      //HOP2
+      this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_POS_2]= hop0_Y + hop_pos_2;
+      if (this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_POS_2]>this.MAX_COMPONENT_VALUE)
+        this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_POS_2]=this.MAX_COMPONENT_VALUE;
+
+      //HOP3
+      this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_POS_3]= hop0_Y + hop_pos_3;
+      if (this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_POS_3]>this.MAX_COMPONENT_VALUE)
+        this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_POS_3]=this.MAX_COMPONENT_VALUE;
+
+      //HOP4
+      this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_POS_4]= hop0_Y + hop_pos_4;
+      if (this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_POS_4]>this.MAX_COMPONENT_VALUE)
+        this.prec_luminance[hop0_Y][rmax][hop1][this.HOP_POS_4]=this.MAX_COMPONENT_VALUE;    
+    },
+
+    LHEInitBestHop: function(hop0_Y, hop1, rmax){
+      var error, min_error;
+      for (var original_color = 0; original_color<this.Y_MAX_COMPONENT; original_color++){
+        error = 0;
+        min_error = 256;
+        
+        //Positive hops computation
+        //-------------------------
+        if (original_color - hop0_Y>=0) 
+        {                        
+            for (var j=this.HOP_0;j<=this.HOP_POS_4;j++) 
+            {               
+                error= original_color - this.prec_luminance[hop0_Y][rmax][hop1][j];
+                if (error<0)
+                    error=-error;
+                if (error<min_error) 
+                {
+                    this.best_hop[rmax][hop1][original_color][hop0_Y]=j;
+                    min_error=error;
+                }
+                else
+                    break;
+            }
+        }
+
+        //Negative hops computation
+        //-------------------------
+        else 
+        {
+            for (var j=this.HOP_0;j>=this.HOP_NEG_4;j--) 
+            {              
+                error= original_color - this.prec_luminance[hop0_Y][rmax][hop1][j];
+                if (error<0) 
+                    error = -error;
+                if (error<min_error) {
+                    this.best_hop[rmax][hop1][original_color][hop0_Y]=j;
+                    min_error=error;
+                }
+                else 
+                    break;
+            }
+        }
+      }//end for original_color
+    },
+
+  };
+</script>

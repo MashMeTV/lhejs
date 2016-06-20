@@ -1,5 +1,8 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="behaviors/color-utils-behavior.html">
+<link rel="import" href="behaviors/lhe-encoder-behavior.html">
+<link rel="import" href="behaviors/lhe-decoder-behavior.html">
+<link rel="import" href="behaviors/lhe-caches-behavior.html">
 
 <dom-module id="lhe-canvas">
 
@@ -38,6 +41,7 @@
 
     <div class="card centered">
       <canvas id="imagecanvas" width="{{width}}" height="{{height}}"></canvas>
+      <canvas id="decoded" width="{{width}}" height="{{height}}"></canvas>
     </div>
   </template>
 
@@ -57,13 +61,10 @@
         },
         height: {
           type: Number
-        },
-        yuvArray:{
-          type: Object
         }
       },
 
-      behaviors:[LHEJS.ColorUtilsBehavior],
+      behaviors:[LHEJS.ColorUtilsBehavior, LHEJS.EncoderBehavior, LHEJS.DecoderBehavior, LHEJS.CachesBehavior],
 
       attached: function(){
         this._renderImage();
@@ -79,7 +80,12 @@
           el.width = img.width;
           el.height = img.height;
           ctx.drawImage(img,0,0);
-          el.yuvArray = el.canvas2YUV(el.$.imagecanvas);
+          el.original_data = el.canvas2YUV(el.$.imagecanvas);
+
+          //TEST
+          el.LHEBasicEncode();
+          el.LHEBasicDecode();
+          el.YUV2canvas(el.decodedImage, el.$.decoded);
         }
       }
     });
