@@ -4,7 +4,17 @@
   window.LHEJS = window.LHEJS || {};
 
   LHEJS.CachesBehavior = {
+
+    properties:{
+      cachesCalculated: {
+        type: Boolean,
+        value: false
+      }
+    },
+
     LHEInitCache: function(){
+      if(this.cachesCalculated) return;
+
       console.time("LHEInitCache");
       var cache_ratio = [0,0]; //pow functions [+,-]
 
@@ -65,6 +75,7 @@
       window.best_hop = this.best_hop;
       window.prec_luminance = this.prec_luminance;
 
+      this.cachesCalculated = true;
       console.timeEnd("LHEInitCache");
     },
 

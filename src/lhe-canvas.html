@@ -1,4 +1,14 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../bower_components/paper-item/paper-item-body.html">
+
+<link rel="import" href="../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+
 <link rel="import" href="behaviors/color-utils-behavior.html">
 <link rel="import" href="behaviors/lhe-encoder-behavior.html">
 <link rel="import" href="behaviors/lhe-decoder-behavior.html">
@@ -34,14 +44,83 @@
       .centered{
         text-align: center;
       }
+
+      paper-button.custom:hover {
+        background-color: var(--paper-green-700);
+      }
+      paper-button.green {
+        background-color: var(--paper-green-500);
+        color: white;
+      }
+
+      .column{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .colEl{
+        flex: 1;
+        margin: 20px;
+      }
+
+      .indented{
+        margin-left: 60px;
+      }
+
+      .hidden:{
+        display: none;
+      }
+
+      video{
+        float: right;
+        height: 150px;
+      }
+
+
     </style>
+
     <div class="card">
-      <p>Loaded: {{image}} ({{width}}x{{height}}px)</p>
+      <video autoplay style="display:block" id="video">
+      </video>
+      <paper-menu-button>
+      <paper-button class="cusstom green dropdown-trigger" raised>
+        <iron-icon icon="menu"></iron-icon>
+        Select image
+      </paper-button>
+
+      <paper-menu id="menu" class="dropdown-content">
+          <template id="menulist" is="dom-repeat" items="[[demo_images]]" as="demo_img">
+
+            <paper-icon-item>
+            <div item-icon>
+              <iron-image width="40" height="40" sizing="contain" src="../images/samples/[[demo_img]]">
+              </iron-image>
+            </div>
+            <paper-item-body>
+              <div>[[demo_img]]</div>
+            </paper-item-body>
+          </paper-icon-item>
+          </template>
+        </paper-menu>
+      </paper-menu-button>
+
+      <paper-button on-tap="_initCamera" class="cusstom green dropdown-trigger" raised>
+        <iron-icon icon="visibility"></iron-icon>
+        Init camera
+      </paper-button>
+      <paper-button on-tap="_takePhoto" class="cusstom green dropdown-trigger" raised>
+        <iron-icon icon="face"></iron-icon>
+        Take photo
+      </paper-button>
+      <p class="indented">Loaded: {{image}} ({{width}}x{{height}}px)</p>
     </div>
 
-    <div class="card centered">
-      <canvas id="imagecanvas" width="{{width}}" height="{{height}}"></canvas>
-      <canvas id="decoded" width="{{width}}" height="{{height}}"></canvas>
+    <div class="card centered column">
+      <h2>Original</h2>
+      <canvas class="colEl" id="imagecanvas" width="{{width}}" height="{{height}}"></canvas>
+      <paper-button class="colEl custom green" on-tap="_onStartTap" raised>ORIGINAL - LHE - DECODE</paper-button>
+      <canvas class="colEl" id="decoded" width="{{width}}" height="{{height}}"></canvas>
     </div>
   </template>
 
@@ -54,20 +133,62 @@
         route: Object,
         image: {
           type: String,
-          value: '../images/samples/lena.png'
+          value: '../images/samples/arqueopterix.jpg',
+          observer: '_renderImage'
         },
         width: {
           type: Number
         },
         height: {
           type: Number
+        },
+        demo_images:{
+          type: Array,
+          value: [
+            'arqueopterix.jpg',
+            'lena.png',
+            'kodak/kodim01.jpg',
+            'kodak/kodim02.jpg',
+            'kodak/kodim03.jpg',
+            'kodak/kodim04.jpg',
+            'kodak/kodim05.jpg',
+            'kodak/kodim06.jpg',
+            'kodak/kodim07.jpg',
+            'kodak/kodim08.jpg',
+            'kodak/kodim09.jpg',
+            'kodak/kodim10.jpg',
+            'kodak/kodim11.jpg',
+            'kodak/kodim12.jpg',
+            'kodak/kodim13.jpg',
+            'kodak/kodim14.jpg',
+            'kodak/kodim15.jpg',
+            'kodak/kodim16.jpg',
+            'kodak/kodim17.jpg',
+            'kodak/kodim18.jpg',
+            'kodak/kodim19.jpg',
+            'kodak/kodim20.jpg',
+            'kodak/kodim21.jpg',
+            'kodak/kodim22.jpg',
+            'kodak/kodim23.jpg',
+            'kodak/kodim24.jpg'
+          ]
         }
+      },
+
+      listeners:{
+        'iron-select': '_onMenuSelect'
       },
 
       behaviors:[LHEJS.ColorUtilsBehavior, LHEJS.EncoderBehavior, LHEJS.DecoderBehavior, LHEJS.CachesBehavior],
 
       attached: function(){
         this._renderImage();
+
+        //TO-DO give own element
+        navigator.getUserMedia = (navigator.getUserMedia ||
+                navigator.webkitGetUserMedia ||
+                navigator.mozGetUserMedia ||
+                navigator.msGetUserMedia );
       },
 
       _renderImage: function(){
@@ -81,13 +202,57 @@
           el.height = img.height;
           ctx.drawImage(img,0,0);
           el.original_data = el.canvas2YUV(el.$.imagecanvas);
-
-          //TEST
-          el.LHEBasicEncode();
-          el.LHEBasicDecode();
-          el.YUV2canvas(el.decodedImage, el.$.decoded);
         }
-      }
+      },
+
+      _onStartTap: function(){
+        //TEST
+        var el = this;
+        el.LHECreateArrays();
+        el.LHEInitCache();
+        el.LHEBasicEncode();
+        el.LHEBasicDecode();
+        el.YUV2canvas(el.decodedImage, el.$.decoded);
+      },
+
+      _onMenuSelect: function(){
+        this.image = "../images/samples/" + this.demo_images[this.$.menulist.indexForElement(this.$.menu.selectedItem)];
+      },
+
+      _initCamera: function(){
+        if(navigator.getUserMedia){
+          navigator.getUserMedia({audio: false,
+          video: {
+            mandatory: {
+              maxWidth: 320,
+              maxHeight: 240
+            }
+          }}, this._gotStream.bind(this), 
+                                              this._gotError.bind(this));
+        }else{
+          error("Your browser does not support WebRTC");
+        }
+      },
+
+      _gotStream: function(stream){
+        this.$.video.src = window.URL.createObjectURL(stream);
+      },
+
+      _takePhoto: function(){
+        var el = this;
+        var canvas = el.$.imagecanvas;
+        var ctx=canvas.getContext("2d");
+        el.width=320;
+        el.height=240;   
+        ctx.drawImage(el.$.video,0,0,320,240);
+        el.original_data = el.canvas2YUV(el.$.imagecanvas);
+      },
+
+      _gotError: function(error){
+        console.error(error);
+      },
+
+
     });
   </script>
 

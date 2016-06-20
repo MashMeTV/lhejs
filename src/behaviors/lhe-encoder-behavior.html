@@ -71,6 +71,8 @@
       this.hops = this.createArray(this.width, this.height, 3);
       //this.first_color_block = this.createArray(this.width, this.height, 3);
       this.first_color = new Array(3);
+
+      if(this.cachesCalculated) return;
       this.best_hop = this.createArray(this.RATIO, this.H1_RANGE, this.Y_MAX_COMPONENT, this.Y_MAX_COMPONENT);
       this.prec_luminance = this.createArray(this.Y_MAX_COMPONENT, this.RATIO, this.H1_RANGE, this.NUMBER_OF_HOPS);
     },
@@ -89,23 +91,21 @@
       var original_color = 0;
 
       //TRAVEL ALL IMAGE PIXELS
-      for(var y=0; y<this.height; y++){
-        for(var x=0; x<this.width; x++){
-
+      for(y=0; y<this.height; y++){
+        for(x=0; x<this.width; x++){
           original_color = this.original_data[x][y][selectedComponent];
 
-          if(x==0 && y==0){
+          if(x===0 && y===0){
             predicted_component = original_color; 
- 
             //LHE Advanced
             //this.first_color_block[0]=original_color;
-          } else if(y==0){
+          } else if(y===0){
             predicted_component = this.prediction[x-1][y][selectedComponent];
-          } else if(x==0){
+          } else if(x===0){
             predicted_component = this.prediction[x][y-1][selectedComponent];
             last_small_hop=false;
             hop_1=this.START_HOP_1;  
-          } else if (x == this.width -1){
+          } else if (x === this.width -1){
             predicted_component = parseInt((this.prediction[x-1][y][selectedComponent] + this.prediction[x][y-1][selectedComponent]) / 2,10);               
           } else {
             predicted_component = parseInt((this.prediction[x-1][y][selectedComponent]+this.prediction[x+1][y-1][selectedComponent]) / 2, 10); 
@@ -132,6 +132,7 @@
             hop_1=this.MAX_HOP_1;                                
           
           last_small_hop=small_hop;
+
         } //end x
 
         //component_original_data+=dif_line; 
@@ -141,8 +142,6 @@
     },
 
     LHEBasicEncode: function(){
-      this.LHECreateArrays();
-      this.LHEInitCache();
       this.first_color = this.original_data[0][0];
       this.LHEBasicEncodeOneHopPerPixel(0);
       this.LHEBasicEncodeOneHopPerPixel(1);

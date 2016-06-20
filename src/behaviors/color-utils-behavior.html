@@ -35,16 +35,16 @@
         var linePos = 0;
         var rowPos  = 0;
 
-        var yuvArray = new Array(this.height);
-        var line = new Array(this.width);
+        var yuvArray = new Array(this.width);
+        var line = new Array(this.height);
 
         console.time("canvas2YUV for")
         for(var i=0; i<rgba_data.length; i+=4){
           line[linePos] = this.rgb2yuv([rgba_data[i],rgba_data[i+1],rgba_data[i+2]])          
           linePos++
-          if(linePos==this.width){
+          if(linePos==this.height){
             yuvArray[rowPos] = line;
-            line = new Array(this.width);
+            line = new Array(this.height);
             linePos=0;
             rowPos++
           }
