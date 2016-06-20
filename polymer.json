@@ -3,6 +3,7 @@
   "shell": "src/my-app.html",
   "fragments": [
     "src/lhe-info.html",
-    "src/lhe-canvas.html"
+    "src/lhe-canvas.html",
+    "src/lhe-about-us.html"
   ]
 }

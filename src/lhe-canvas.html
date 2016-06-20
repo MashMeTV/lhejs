@@ -117,9 +117,15 @@
     </div>
 
     <div class="card centered column">
-      <h2>Original</h2>
+      <h2 class="colEl">Original</h2>
       <canvas class="colEl" id="imagecanvas" width="{{width}}" height="{{height}}"></canvas>
-      <paper-button class="colEl custom green" on-tap="_onStartTap" raised>ORIGINAL - LHE - DECODE</paper-button>
+    </div>
+
+    <div class="card centered column">
+      <paper-button class="colEl custom green" on-tap="_onStartTap" raised> 
+        <iron-icon icon="swap-horiz"></iron-icon>
+        START ENCODE/DECODE
+      </paper-button>
       <canvas class="colEl" id="decoded" width="{{width}}" height="{{height}}"></canvas>
     </div>
   </template>
@@ -227,8 +233,7 @@
               maxWidth: 320,
               maxHeight: 240
             }
-          }}, this._gotStream.bind(this), 
-                                              this._gotError.bind(this));
+          }}, this._gotStream.bind(this), this._gotError.bind(this));
         }else{
           error("Your browser does not support WebRTC");
         }
