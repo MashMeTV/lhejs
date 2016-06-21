@@ -1,5 +1,14 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-
+/**
+   * `CachesBehavior` injects a healthy dose of awesome into your page.
+   *
+   * In typical use, just slap some `CachesBehavior` at the top of your body:
+   *
+   *
+   * Wham! It's all awesome now!
+   *
+   * @polymerBehavior
+   */
 <dom-module id="lhe-info">
 
   <template>
@@ -62,7 +71,14 @@
   <script>
 
     Polymer({
-      is: 'lhe-info'
+      is: 'lhe-info',
+      properties: {
+        /**
+      * cachesCalculated describing what has been made awesome on the page.
+      *
+      */
+        totot: String
+      }
 
     });
 
