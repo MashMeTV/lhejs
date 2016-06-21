@@ -273,8 +273,8 @@ Wham! It's all awesome now!
           navigator.getUserMedia({audio: false,
           video: {
             mandatory: {
-              maxWidth: 320,
-              maxHeight: 240
+              maxWidth: 150,
+              maxHeight: 150
             }
           }}, this._gotStream.bind(this), this._gotError.bind(this));
         }else{
@@ -290,9 +290,9 @@ Wham! It's all awesome now!
         var el = this;
         var canvas = el.$.imagecanvas;
         var ctx=canvas.getContext("2d");
-        el.width=320;
-        el.height=240;   
-        ctx.drawImage(el.$.video,0,0,320,240);
+        el.width=150;
+        el.height=150;
+        ctx.drawImage(el.$.video,0,0,150,150);
         el.original_data = el.canvas2YUV(el.$.imagecanvas);
       },
 
