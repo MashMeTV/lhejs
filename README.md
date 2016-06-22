@@ -1,7 +1,8 @@
 ![alt text][logo]
 [logo]: https://github.com/MashMeTV/lhejs/blob/master/images/arqueopterix.png "Arqueopterix"
 
-# H1 LHE DEMONSTRATOR SET-UP
+LHE demostrator set-up
+======================
 
 1. Install [Git](https://git-scm.com/downloads)
 
