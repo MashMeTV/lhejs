@@ -8,6 +8,7 @@
 
 <link rel="import" href="../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/image-icons.html">
 
 <link rel="import" href="behaviors/color-utils-behavior.html">
 <link rel="import" href="behaviors/lhe-encoder-behavior.html">
@@ -88,33 +89,33 @@
       <video autoplay style="display:block" id="video">
       </video>
       <paper-menu-button>
-      <paper-button class="cusstom green dropdown-trigger" raised>
-        <iron-icon icon="menu"></iron-icon>
-        Select image
-      </paper-button>
+        <paper-button class="cusstom green dropdown-trigger" raised>
+          <iron-icon icon="menu"></iron-icon>
+          Select image
+        </paper-button>
 
-      <paper-menu id="menu" class="dropdown-content">
-          <template id="menulist" is="dom-repeat" items="[[demo_images]]" as="demo_img">
+        <paper-menu id="menu" class="dropdown-content">
+            <template id="menulist" is="dom-repeat" items="[[demo_images]]" as="demo_img">
 
-            <paper-icon-item>
-            <div item-icon>
-              <iron-image width="40" height="40" sizing="contain" src="../images/samples/[[demo_img]]">
-              </iron-image>
-            </div>
-            <paper-item-body>
-              <div>[[demo_img]]</div>
-            </paper-item-body>
-          </paper-icon-item>
-          </template>
-        </paper-menu>
+              <paper-icon-item>
+              <div item-icon>
+                <iron-image width="40" height="40" sizing="contain" src="../images/samples/[[demo_img]]">
+                </iron-image>
+              </div>
+              <paper-item-body>
+                <div>[[demo_img]]</div>
+              </paper-item-body>
+            </paper-icon-item>
+            </template>
+          </paper-menu>
       </paper-menu-button>
 
       <paper-button on-tap="_initCamera" class="cusstom green dropdown-trigger" raised>
-        <iron-icon icon="visibility"></iron-icon>
+        <iron-icon icon="image:camera"></iron-icon>
         Init camera
       </paper-button>
       <paper-button on-tap="_takePhoto" class="cusstom green dropdown-trigger" raised>
-        <iron-icon icon="face"></iron-icon>
+        <iron-icon icon="image:camera-alt"></iron-icon>
         Take photo
       </paper-button>
       <paper-button class="colEl custom green" on-tap="_onStartTap" raised>
