@@ -21,13 +21,13 @@ LHE demostrator set-up
 	```
 5. Clone this repository
 	```
-	git clone https://github.com/MashMeTV/lhejs.git
+	$ git clone https://github.com/MashMeTV/lhejs.git
 	```
 
 6. Install dependencies
 
 	```
-	cd lhejs
-	bower install
-	polymer serve --open
+	$ cd lhejs
+	$ bower install
+	$ polymer serve --open
 	```

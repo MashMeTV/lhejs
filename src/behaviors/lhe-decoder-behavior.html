@@ -71,6 +71,10 @@
       console.timeEnd("LHEBasicDecodeOneHopPerPixel " + selectedComponent); 
     },
 
+    /**
+      * LHE basic decode
+      *
+      */
     LHEBasicDecode: function(){
       this.decodedImage = this.createArray(this.width, this.height, 3);
       this.LHEBasicDecodeOneHopPerPixel(0, this.first_color[0], this.hops);

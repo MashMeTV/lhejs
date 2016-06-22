@@ -4,7 +4,7 @@
   window.LHEJS = window.LHEJS || {};
 
   /**
-   * `EncoderBehavior`
+   * `EncoderBehavior` 
    *
    * @polymerBehavior
    */
@@ -51,6 +51,10 @@
       best_hop:{
         type: Object
       },
+      /**
+        * predicted signal
+        *
+        */
       prec_luminance:{
         type: Object
       }
@@ -82,8 +86,10 @@
       this.prec_luminance = this.createArray(this.Y_MAX_COMPONENT, this.RATIO, this.H1_RANGE, this.NUMBER_OF_HOPS);
     },
 
-
-
+    /**
+      * LHE basic encode one hop per pixel
+      *
+      */
     LHEBasicEncodeOneHopPerPixel: function(selectedComponent){  //component, 0=y, 1=u, 2=v 
       console.time("LHEBasicEncodeOneHopPerPixel " + selectedComponent);    
       //INIT VARIABLES
@@ -146,6 +152,10 @@
       console.timeEnd("LHEBasicEncodeOneHopPerPixel " + selectedComponent);
     },
 
+    /**
+      * LHE basic encode
+      *
+      */
     LHEBasicEncode: function(){
       this.first_color = this.original_data[0][0];
       this.LHEBasicEncodeOneHopPerPixel(0);
