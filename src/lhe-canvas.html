@@ -119,6 +119,10 @@
         <iron-icon icon="image:camera-alt"></iron-icon>
         Take photo
       </paper-button>
+      <paper-button class="colEl custom green" on-tap="_lenaTest" raised>
+        <iron-icon icon="communication:import-export"></iron-icon>
+        LENA TEST
+      </paper-button>
       <paper-button class="colEl custom green" on-tap="_onStartTap" raised>
         <iron-icon icon="communication:import-export"></iron-icon>
         START ENCODE/DECODE
@@ -150,7 +154,7 @@
         */
         image: {
           type: String,
-          value: '../images/samples/arqueopterix.jpg',
+          value: '../images/samples/lena.png',
           observer: '_renderImage'
         },
 
@@ -264,12 +268,14 @@
           el.LHEBasicDecode();
           el.YUV2canvas(el.decodedImage, el.$.decoded);
         this.timeEnd('TOTAL DECODING');
-        
-        this._lenaEncodingTest(100);
-        this._lenaDecodingTest(100);
-        
+          
         //This line test canvas2YUV and YUV2canvas
         //el.YUV2canvas(el.original_data, el.$.decoded);
+      },
+
+      _lenaTest: function(){
+        this._lenaEncodingTest(100);
+        this._lenaDecodingTest(100);
       },
 
       _lenaEncodingTest: function(n){
