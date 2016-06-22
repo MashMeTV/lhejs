@@ -34,18 +34,17 @@
             
             hop = hops[x][y][selectedComponent]; 
             
-            if (x==0 && y==0)
-                predicted_component=first_color;//first pixel always is perfectly predicted! :-)  
-            
-            else if (y == 0)
+            if (x===0 && y===0)
+                predicted_component=first_color;//first pixel always is perfectly predicted! :-)
+            else if (y === 0)
                 predicted_component=this.decodedImage[x-1][y][selectedComponent];            
-            else if (x == 0)
+            else if (x === 0)
             {
                 predicted_component=this.decodedImage[x][y-1][selectedComponent];
                 last_small_hop=false;
                 hop_1=this.START_HOP_1;
             } 
-            else if (x == this.width -1)
+            else if (x === this.width -1)
                 predicted_component=parseInt((this.decodedImage[x-1][y][selectedComponent]+this.decodedImage[x][y-1][selectedComponent])/2,10);
             else 
                 predicted_component=parseInt((this.decodedImage[x-1][y][selectedComponent]+this.decodedImage[x+1][y-1][selectedComponent])/2,10);

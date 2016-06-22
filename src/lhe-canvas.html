@@ -188,6 +188,11 @@ Wham! It's all awesome now!
           value: [
             'arqueopterix.jpg',
             'lena.png',
+            'ct/ct1.jpg',
+            'ct/ct2.jpg',
+            'ct/ct3.jpg',
+            'ct/ct4.jpg',
+            'ct/ct5.jpg',
             'kodak/kodim01.jpg',
             'kodak/kodim02.jpg',
             'kodak/kodim03.jpg',
@@ -211,11 +216,8 @@ Wham! It's all awesome now!
             'kodak/kodim21.jpg',
             'kodak/kodim22.jpg',
             'kodak/kodim23.jpg',
-            'ct/ct1.jpg',
-            'ct/ct2.jpg',
-            'ct/ct3.jpg',
-            'ct/ct4.jpg',
-            'ct/ct5.jpg'
+            'test.jpg',
+            'test2.jpg'
           ]
         }
       },
@@ -262,6 +264,9 @@ Wham! It's all awesome now!
         el.LHEBasicEncode();
         el.LHEBasicDecode();
         el.YUV2canvas(el.decodedImage, el.$.decoded);
+
+        //This line test canvas2YUV and YUV2canvas
+        //el.YUV2canvas(el.original_data, el.$.decoded);
       },
 
       _onMenuSelect: function(){
