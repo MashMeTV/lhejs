@@ -117,6 +117,10 @@
         <iron-icon icon="face"></iron-icon>
         Take photo
       </paper-button>
+      <paper-button class="colEl custom green" on-tap="_onStartTap" raised>
+        <iron-icon icon="swap-horiz"></iron-icon>
+        START ENCODE/DECODE
+      </paper-button>
       <p class="indented">Loaded: {{image}} ({{width}}x{{height}}px)</p>
     </div>
 
@@ -126,10 +130,6 @@
     </div>
 
     <div class="card centered column">
-      <paper-button class="colEl custom green" on-tap="_onStartTap" raised>
-        <iron-icon icon="swap-horiz"></iron-icon>
-        START ENCODE/DECODE
-      </paper-button>
       <canvas class="colEl" id="decoded" width="{{width}}" height="{{height}}"></canvas>
     </div>
   </template>
