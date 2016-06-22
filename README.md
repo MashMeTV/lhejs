@@ -1,4 +1,5 @@
-[logo]: https://github.com/MashMeTV/lhejs/blob/master/images/arqueopterix.png
+![alt text][logo]
+[logo]: https://github.com/MashMeTV/lhejs/blob/master/images/arqueopterix.png "Arqueopterix"
 
 # H1 LHE DEMONSTRATOR SET-UP
 
