@@ -36,10 +36,10 @@
 
     //Polymer properties
     properties:{
-      original_data:{ //wxhx3
+      original_data:{ //(wxh)x3
         type: Object
       },
-      prediction:{ //wxhx3
+      prediction:{ //(wxh)x3
         type: Object
       },
       hops:{ //wxhx3
@@ -76,8 +76,8 @@
     },
 
     LHECreateArrays: function(){
-      this.prediction = this.createArray(this.width, this.height, 3);
-      this.hops = this.createArray(this.width, this.height, 3);
+      this.prediction = this.createArray(this.width * this.height, 3);
+      this.hops = this.createArray(this.width * this.height, 3);
       //this.first_color_block = this.createArray(this.width, this.height, 3);
       this.first_color = new Array(3);
 
@@ -101,31 +101,33 @@
       var rmax=this.PARAM_R;
       var original_color = 0;
 
+      var pix = 0;
+
       //TRAVEL ALL IMAGE PIXELS
       for(y=0; y<this.height; y++){
         for(x=0; x<this.width; x++){
-          original_color = this.original_data[x][y][selectedComponent];
+          original_color = this.original_data[pix][selectedComponent];
 
           if(x===0 && y===0){
             predicted_component = original_color; 
             //LHE Advanced
             //this.first_color_block[0]=original_color;
           } else if(y===0){
-            predicted_component = this.prediction[x-1][y][selectedComponent];
+            predicted_component = this.prediction[pix-1][selectedComponent];
           } else if(x===0){
-            predicted_component = this.prediction[x][y-1][selectedComponent];
+            predicted_component = this.prediction[pix-this.width][selectedComponent];
             last_small_hop=false;
             hop_1=this.START_HOP_1;  
           } else if (x === this.width -1){
-            predicted_component = parseInt((this.prediction[x-1][y][selectedComponent] + this.prediction[x][y-1][selectedComponent]) / 2,10);               
+            predicted_component = parseInt((this.prediction[pix-1][selectedComponent] + this.prediction[pix-this.width][selectedComponent]) / 2,10);               
           } else {
-            predicted_component = parseInt((this.prediction[x-1][y][selectedComponent]+this.prediction[x+1][y-1][selectedComponent]) / 2, 10); 
+            predicted_component = parseInt((this.prediction[pix-1][selectedComponent]+this.prediction[pix+1-this.width][selectedComponent]) / 2, 10); 
           }
 
           hop_number = this.best_hop[rmax][hop_1][original_color][predicted_component];
 
-          this.prediction[x][y][selectedComponent]= this.prec_luminance[predicted_component][rmax][hop_1][hop_number];  
-          this.hops[x][y][selectedComponent]= hop_number;
+          this.prediction[pix][selectedComponent]= this.prec_luminance[predicted_component][rmax][hop_1][hop_number];  
+          this.hops[pix][selectedComponent]= hop_number;
           
           //H1_ADAPTATION
           if (hop_number<=this.HOP_POS_1 && hop_number>=this.HOP_NEG_1) 
@@ -144,11 +146,13 @@
           
           last_small_hop=small_hop;
 
+          pix++;
         } //end x
 
         //component_original_data+=dif_line; 
-        window.hops = this.hops;
       } // end y
+      window.hops = this.hops;
+      window.prediction = this.prediction;
       console.timeEnd("LHEBasicEncodeOneHopPerPixel " + selectedComponent);
     },
 
@@ -157,7 +161,7 @@
       *
       */
     LHEBasicEncode: function(){
-      this.first_color = this.original_data[0][0];
+      this.first_color = this.original_data[0];
       this.LHEBasicEncodeOneHopPerPixel(0);
       this.LHEBasicEncodeOneHopPerPixel(1);
       this.LHEBasicEncodeOneHopPerPixel(2);

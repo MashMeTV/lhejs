@@ -10,7 +10,7 @@
    */
   LHEJS.DecoderBehavior = {
     properties:{
-      image:{ //wxhx3
+      image:{ //(wxh)x3
         type: Object
       }
     },
@@ -24,30 +24,31 @@
       var rmax=this.PARAM_R;
       var hop =0;
 
+      var pix=0;
+
       for (var y=0; y < this.height; y++)  {
         for (var x=0; x < this.width; x++)     {
             
-            hop = hops[x][y][selectedComponent]; 
+            hop = hops[pix][selectedComponent]; 
             
             if (x===0 && y===0)
-                predicted_component=first_color;//first pixel always is perfectly predicted! :-)
+              predicted_component=first_color;//first pixel always is perfectly predicted! :-)
             else if (y === 0)
-                predicted_component=this.decodedImage[x-1][y][selectedComponent];            
+                predicted_component=this.decodedImage[pix-1][selectedComponent];            
             else if (x === 0)
             {
-                predicted_component=this.decodedImage[x][y-1][selectedComponent];
+                predicted_component=this.decodedImage[pix-this.width][selectedComponent];
                 last_small_hop=false;
                 hop_1=this.START_HOP_1;
             } 
             else if (x === this.width -1)
-                predicted_component=parseInt((this.decodedImage[x-1][y][selectedComponent]+this.decodedImage[x][y-1][selectedComponent])/2,10);
+                predicted_component=parseInt((this.decodedImage[pix-1][selectedComponent]+this.decodedImage[pix-this.width][selectedComponent])/2,10);
             else 
-                predicted_component=parseInt((this.decodedImage[x-1][y][selectedComponent]+this.decodedImage[x+1][y-1][selectedComponent])/2,10);
+                predicted_component=parseInt((this.decodedImage[pix-1][selectedComponent]+this.decodedImage[pix+1-this.width][selectedComponent])/2,10);
     
             //assignment of component_prediction
             //This is the uncompressed image
-
-            this.decodedImage[x][y][selectedComponent]= this.prec_luminance[predicted_component][rmax][hop_1][hop];
+            this.decodedImage[pix][selectedComponent]= this.prec_luminance[predicted_component][rmax][hop_1][hop];
             
             //tunning hop1 for the next hop ( "h1 adaptation")
             //------------------------------------------------
@@ -66,6 +67,7 @@
               hop_1=this.MAX_HOP_1;                                
             
             last_small_hop=small_hop;
+            pix++;
         }// for x
       }// for y
       console.timeEnd("LHEBasicDecodeOneHopPerPixel " + selectedComponent); 
@@ -76,7 +78,7 @@
       *
       */
     LHEBasicDecode: function(){
-      this.decodedImage = this.createArray(this.width, this.height, 3);
+      this.decodedImage = this.createArray(this.width * this.height, 3);
       this.LHEBasicDecodeOneHopPerPixel(0, this.first_color[0], this.hops);
       this.LHEBasicDecodeOneHopPerPixel(1, this.first_color[1], this.hops);
       this.LHEBasicDecodeOneHopPerPixel(2, this.first_color[2], this.hops);

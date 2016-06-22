@@ -41,22 +41,11 @@
         var ctx=canvas.getContext("2d");
         var rgba_data = ctx.getImageData(0,0,this.width,this.height).data;
 
-        var linePos = 0;
-        var rowPos  = 0;
-
-        var yuvArray = new Array(this.width);
-        var line = new Array(this.height);
+        var yuvArray = [];
 
         console.time("canvas2YUV for")
         for(var i=0; i<rgba_data.length; i+=4){
-          line[linePos] = this.rgb2yuv([rgba_data[i],rgba_data[i+1],rgba_data[i+2]])          
-          linePos++
-          if(linePos==this.height){
-            yuvArray[rowPos] = line;
-            line = new Array(this.height);
-            linePos=0;
-            rowPos++
-          }
+          yuvArray.push(this.rgb2yuv([rgba_data[i],rgba_data[i+1],rgba_data[i+2]]));        
         }
         console.timeEnd("canvas2YUV for")
         
@@ -69,17 +58,15 @@
       YUV2canvas: function(yuvArray, canvas){
         console.time("YUV2canvas")
         var ctx=canvas.getContext("2d");
-        var imageData = ctx.getImageData(0,0,yuvArray.length,yuvArray[0].length)
+        var imageData = ctx.getImageData(0,0,this.width,this.height);
         var pix = 0;
         var data = [];
-        for(var x=0; x<yuvArray.length; x++){
-          for(var y=0; y<yuvArray[0].length; y++){
-            var prgba = this.yuv2rgba([yuvArray[x][y][0],yuvArray[x][y][1],yuvArray[x][y][2]])
-            data.push(prgba[0]);
-            data.push(prgba[1]);
-            data.push(prgba[2]);
-            data.push(prgba[3]);
-          }
+        for(var pix=0; pix<yuvArray.length; pix++){
+          var prgba = this.yuv2rgba([yuvArray[pix][0],yuvArray[pix][1],yuvArray[pix][2]]);
+          data.push(prgba[0]);
+          data.push(prgba[1]);
+          data.push(prgba[2]);
+          data.push(prgba[3]);        
         }
 
         for(var i = 0; i < data.length; i+=4) {

@@ -179,11 +179,6 @@
           value: [
             'arqueopterix.jpg',
             'lena.png',
-            'ct/ct1.jpg',
-            'ct/ct2.jpg',
-            'ct/ct3.jpg',
-            'ct/ct4.jpg',
-            'ct/ct5.jpg',
             'kodak/kodim01.jpg',
             'kodak/kodim02.jpg',
             'kodak/kodim03.jpg',
@@ -206,9 +201,7 @@
             'kodak/kodim20.jpg',
             'kodak/kodim21.jpg',
             'kodak/kodim22.jpg',
-            'kodak/kodim23.jpg',
-            'test.jpg',
-            'test2.jpg'
+            'kodak/kodim23.jpg'
           ]
         }
       },
@@ -243,7 +236,6 @@
           el.width = img.width;
           el.height = img.height;
           ctx.drawImage(img,0,0);
-          el.original_data = el.canvas2YUV(el.$.imagecanvas);
         }
       },
 
@@ -252,10 +244,16 @@
         var el = this;
         el.LHECreateArrays();
         el.LHEInitCache();
+
+        console.time('TOTAL ENCODING');
+        el.original_data = el.canvas2YUV(el.$.imagecanvas);
         el.LHEBasicEncode();
+        console.timeEnd('TOTAL ENCODING');
+
+        console.time('TOTAL DECODING');
         el.LHEBasicDecode();
         el.YUV2canvas(el.decodedImage, el.$.decoded);
-
+        console.timeEnd('TOTAL DECODING');
         //This line test canvas2YUV and YUV2canvas
         //el.YUV2canvas(el.original_data, el.$.decoded);
       },
