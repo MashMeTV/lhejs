@@ -171,6 +171,15 @@
         },
 
         /**
+        * Timers
+        *
+        */
+        timers:{
+          type: Object,
+          value: {}
+        },
+
+        /**
         * Array of images paths
         *
         */
@@ -210,7 +219,7 @@
         'iron-select': '_onMenuSelect'
       },
 
-      behaviors:[LHEJS.ColorUtilsBehavior, LHEJS.EncoderBehavior, LHEJS.DecoderBehavior, LHEJS.CachesBehavior],
+      behaviors:[LHEJS.ColorUtilsBehavior, LHEJS.EncoderBehavior, LHEJS.DecoderBehavior, LHEJS.CachesBehavior/*, LHEJS.TimeUtilsBehavior*/],
 
       attached: function(){
         this._renderImage();
@@ -240,22 +249,66 @@
       },
 
       _onStartTap: function(){
-        //TEST
+        var el = this;
+        this.time('LHE CACHE INIT')
+          el.LHECreateArrays();
+          el.LHEInitCache();
+        this.timeEnd('LHE CACHE INIT')
+
+        this.time('TOTAL ENCODING');
+          el.original_data = el.canvas2YUV(el.$.imagecanvas);
+          el.LHEBasicEncode();
+        this.timeEnd('TOTAL ENCODING');
+
+        this.time('TOTAL DECODING');
+          el.LHEBasicDecode();
+          el.YUV2canvas(el.decodedImage, el.$.decoded);
+        this.timeEnd('TOTAL DECODING');
+        
+        this._lenaEncodingTest(100);
+        this._lenaDecodingTest(100);
+        
+        //This line test canvas2YUV and YUV2canvas
+        //el.YUV2canvas(el.original_data, el.$.decoded);
+      },
+
+      _lenaEncodingTest: function(n){
         var el = this;
         el.LHECreateArrays();
         el.LHEInitCache();
+        this.image = "../images/samples/lena.png";
+        setTimeout(function(){
+          var totalTime = 0;
+          for(var i=0; i<n; i++){
+            el.time('TOTAL ENCODING', true);
+              el.original_data = el.canvas2YUV(el.$.imagecanvas);
+              el.LHEBasicEncode();
+            totalTime += el.timeEnd('TOTAL ENCODING',true);          
+          }
 
-        console.time('TOTAL ENCODING');
-        el.original_data = el.canvas2YUV(el.$.imagecanvas);
-        el.LHEBasicEncode();
-        console.timeEnd('TOTAL ENCODING');
+          console.log("ENCODE AVERAGE("+n+"): ",(totalTime/n).toFixed(3)+" ms");
+        }, 2000);
+      },
 
-        console.time('TOTAL DECODING');
-        el.LHEBasicDecode();
-        el.YUV2canvas(el.decodedImage, el.$.decoded);
-        console.timeEnd('TOTAL DECODING');
-        //This line test canvas2YUV and YUV2canvas
-        //el.YUV2canvas(el.original_data, el.$.decoded);
+      _lenaDecodingTest: function(n){
+        var el = this;
+        el.LHECreateArrays();
+        el.LHEInitCache();
+        this.image = "../images/samples/lena.png";
+        setTimeout(function(){
+          var totalTime = 0;
+          el.original_data = el.canvas2YUV(el.$.imagecanvas);
+          el.LHEBasicEncode();
+          
+          for(var i=0; i<n; i++){
+            el.time('TOTAL DECODING',true);
+              el.LHEBasicDecode();
+              el.YUV2canvas(el.decodedImage, el.$.decoded);
+            totalTime += el.timeEnd('TOTAL DECODING',true);          
+          }
+
+          console.log("DECODE AVERAGE("+n+"): ",(totalTime/n).toFixed(3)+ "ms");
+        },2000);
       },
 
       _onMenuSelect: function(){
@@ -294,6 +347,21 @@
         console.error(error);
       },
 
+      time: function(id){
+        this.timers[id] = performance.now();
+      },
+
+      timeEnd: function(id, hidePrintLog){
+        if(this.timers.hasOwnProperty(id)){
+          var r = performance.now() - this.timers[id];
+          if(!hidePrintLog)
+            console.debug("Timer "+id+":", r.toFixed(3)+"ms");
+          return r;
+        }
+        else{
+          console.error("Timer "+id+" does not exist");
+        }
+      }
 
     });
   </script>

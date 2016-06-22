@@ -31,3 +31,9 @@ LHE demostrator set-up
 	$ bower install
 	$ polymer serve --open
 	```
+
+Current Lena test x 100 average
+======================
+
+ENCODE AVERAGE(100):  177.303 ms
+DECODE AVERAGE(100):  269.643ms

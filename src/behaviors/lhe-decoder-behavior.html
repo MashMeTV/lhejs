@@ -16,7 +16,6 @@
     },
 
     LHEBasicDecodeOneHopPerPixel: function(selectedComponent, first_color, hops){
-      console.time("LHEBasicDecodeOneHopPerPixel " + selectedComponent);    
       var predicted_component = 0;
       var small_hop = false;
       var last_small_hop=false;      // indicates if last hop is small
@@ -70,7 +69,6 @@
             pix++;
         }// for x
       }// for y
-      console.timeEnd("LHEBasicDecodeOneHopPerPixel " + selectedComponent); 
     },
 
     /**

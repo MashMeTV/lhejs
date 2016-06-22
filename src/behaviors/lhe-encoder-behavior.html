@@ -91,7 +91,6 @@
       *
       */
     LHEBasicEncodeOneHopPerPixel: function(selectedComponent){  //component, 0=y, 1=u, 2=v 
-      console.time("LHEBasicEncodeOneHopPerPixel " + selectedComponent);    
       //INIT VARIABLES
       var predicted_component = 0;
       var small_hop = false;
@@ -153,7 +152,6 @@
       } // end y
       window.hops = this.hops;
       window.prediction = this.prediction;
-      console.timeEnd("LHEBasicEncodeOneHopPerPixel " + selectedComponent);
     },
 
     /**
